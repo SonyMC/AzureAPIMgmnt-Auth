@@ -1,0 +1,1031 @@
+Function Apps:
+------------------
+	- In a single function app you can have multiple functions 
+	- Works in a serverless environment
+	- Create Function App:
+		- Azure -> Search for Function Apps -> Function Apps ->Create
+		- Subscription= select your sub
+		- Resource Group -> Create New -> Name = Serverless-Hello-World
+		- Function App name= hello-world-serverless-mailsonymathew
+		- Publish= code
+		- Runtime stack = Node.js
+		- Version = 12 lTS
+		- Region = Central US
+		- Review & Create -> Create
+	- Create function :	
+		- Resource Group = Serverless-Hello-World -> our app -> hello-world-serverless-mailsonymathew
+		- Functions( on LHS tab) -> Create
+			- Select on how the serverless function is going to be triggered:
+				- Devlopment environment: Develop in portal
+				- Choose HTTP trigger for demo:		
+					- Details -> New Function = hello-world
+					- Authorization level = function
+					- Create Function
+			 -Code+ Test the function:
+				- Click on CODE + Test on LHS -> Wil lshow code body of index.js
+					-> Click on Test/Runicon on top of code body:
+						-> HTTP method = POST
+						-> Key= master(Host key) 
+						-> Leave Query , Headers , Body as default 
+						- > RUN
+						-> Response code 200
+				- Check logs on bottom
+
+				-  Click on CODE + Test on LHS -> Wil lshow code body of index.js
+					-Code body:
+						- line no. 1 : module.exports = async function( context,req)
+								- Two parms passed in where context is the execution context liek env etc and Request contains details about resuest like query parm, body  and header
+						-> Click on Test/Run icon on top of code body:
+							- Input -> Query -> Ad dparmater -> Name=name, Value= Sony
+							- Run
+						-> Output will contain Sony
+						-> Click on Test/Run icon on top of code body:
+							- Input ->Body-> "name":Sony
+			 
+							- Run
+						-> Output will contain Sony
+
+				- Expose function as REST API-> Click on 'Get Function URL' -> copy url -> paste it in browser
+					- At end of url afer '==' add '&name=Sony'
+
+			-  Click on CODE + Test on LHS -> Wil lshow code body of index.js
+					-Code body:
+						- change to return context instead of responseMEassage:
+							context.res= {
+							body: JSOn.stringify(context) 
+							};
+						- Expose function as REST API-> Click on 'Get Function URL' -> copy url -> paste it in browser	
+						- Will show context details
+
+						- change to return request:
+							context.res= {
+							body: JSOn.stringify(req) 
+							};
+						- Expose function as REST API-> Click on 'Get Function URL' -> copy url -> paste it in browser	
+						- Will show request details
+
+			- function.json : Click on dropdwon above code body to select function.js instead of index.js
+					- Thsi will contain all input and output bindings( direction = in for input and direction=out fro output)
+					- Input binding handles incoming request an d Outcoming binding handles response
+					- Function keys:In input you can see auth level set as function. In teh request url you can see a function key automatically supplied( startrs with code=)
+						- The value of teh function key is supplied from the section 'Function Keys':
+							- Click 'Function Keys' on LHS tab -> 
+								- Name= default
+								- Value= click on eye icon to see function key value	
+								- You cann add new values or geernate a new values
+					 - Request name= "req"
+					 - Methods supportes : POST,GET
+					- In output binding you can use "name": "$return" instead of "res" 	
+			- index.js:
+					- Intead of 'context.res =' use 'return'
+
+			- If we do not want any authentication:
+				- function.js:
+					- change input binding:
+						- "authLevel": "anonymous" ( from "function")
+			- Remove function code from url and it will work
+
+
+
+Building Azure funcctions in Visual Studio
+--------------------------------------------
+-D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+- code reference: https://github.com/in28minutes/go-serverless/tree/master/01.azure/azure-rest-api-v2/listTodos
+		:https://github.com/in28minutes/go-serverless/blob/master/01.azure/azure-rest-api-v2/azure.md
+
+- Install Node js(npm) :	
+	-https://nodejs.org/en/download/
+	-After istallation , check version:
+		- cmd: npm version
+
+{
+  npm: '8.3.0',
+  node: '16.13.1',
+  v8: '9.4.146.24-node.14',
+
+
+- Connect to Azure functions from Visual Studio 
+		- Open Visual studio 
+		- Extensions -> Azure functions-> Enable
+		- Azure extension icon should be visible on LHS tab of VS
+			- Click on it ->Functions sign in to Azure-> Click on icon within Functions to create newproject
+				 -> Select folder:Open folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+				 -> Select Language: Java Script
+				 -> Template = skip for now 
+- Seelct explorer icon in VS:
+	- OPen folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2	   
+
+
+- Create listToDos Function App from VS:
+	- Go to Azure function in VS:
+		- Click on Create Function icon :
+			- Select template: HTTP trigger
+	- 		- Function Name: listToDos -> Press Enter
+				- Authorization=Anonymous
+
+- Select Expolorer:
+	- New folder named 'listToDos, has benn created with 3 files : 
+			- 1) function.json : Will contain input and output bindings
+			- 2) index.js : Will contain code for function
+			- 3) sample.dat : is any sampe reuest body that can be used to execute teh function
+
+- Running Azure Serverless in Local:
+	- Install Azure CLI: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli  
+		- Verify- > open cmd:
+			- cmd: az --version
+			- Update:
+				- cmd: az upgrade	
+	- Install Azure function core tools: https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash%2Ckeda		
+		-Verify -> open cmd:
+			- cmd:func --version
+
+	- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+				- copy listToDos url from console: [GET,POST] http://localhost:7071/api/listToDos
+				- pass a name parameter: http://localhost:7071/api/listToDos?name=Tigers!!!
+	- Customizing response and bindings for ListToDos:
+		- Explorer:
+			- index.js:
+    //context.res = {
+    return{    
+        // status: 200, /* Defaults to 200 */
+        body: 'Keep roaring!!!'
+    };
+
+			- function.json:
+			    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    }
+
+			
+		
+	- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+				- copy listToDos url from console: [GET,POST] http://localhost:7071/api/listToDos
+					- http://localhost:7071/api/listToDos
+	 	
+	 -Explorer-> function.json:
+		-  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get"
+      ],
+      "route": "todos"  //specify a route
+    },
+	
+	- base don the 'route' specified, the url now will be: http://localhost:7071/api/todos 		
+	- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+				- copy listToDos url from console: [GET,POST] http://localhost:7071/api/listToDos
+					- chang eit as follows: http://localhost:7071/api/todos 
+
+Cosmos Mongo DB
+-------------------------
+
+- Create COSMOS DB Account:
+	- Azure COSMOS DB :
+		- Is used as data store which can be used o configure an instance of Mongo DB 
+		- Mongo DB is  a document DB which is similar to AWS Dynamo DB
+		- Add -> 
+			: Select API option: Azure Cosmos DB API for MongoDB
+			: Resource Group -> Create new -> cosmosdb-todos-mailsonymathew
+			: Account name= cosmosdb-todos-mailsonymathew
+			:Capcaity mode: Serverless
+			: Apply free tier discount: Apply
+			:Limit total account throughput: Enable
+			:Location:(US) East US
+			:Version= any version 
+			:Global Distribution:
+				:Geo-redundancy= Disable
+				:Multi-region Writes = Disable
+				: Availability zones = Disable
+			: Networking:
+				: Connectivity method: All networks
+			: Backup Policy:
+				- Choose defaults
+				- Backup Storage redundancy = Locally redundant backup storage
+			: Encryption:
+				- Service-managed key 
+			: Tags: 
+				- leave blank
+			: Review and create
+		- Create
+
+	- Creation time = around 5 minutes
+
+- Create COSMOS DB and Collections:
+
+	- cosmosdb-todos-mailsonymathew -> 
+		- Choose a platform = Select Node.js
+			 - Connection details: Mongo DB connection details can be seen. 
+			-**** Later this can be accessed from cosmosdb-todos-mailsonymathew -> Quick Start 
+		 
+		- Overview -> Add Collection:
+			- Collection is very similar to a table
+			- In a Document database a collection contains no. of documents
+			- Each document corresponds to a row of data 	
+			- Hierarchy:
+				- Account -> Database -> Collections -> Documents
+			- Database name -> Create new -> Database name= serverless
+			- Collection nam =todos
+			- Sharding: Sharded
+			
+			- Shard key= _id
+				- must start with '_'
+				- Shard is very important
+				- Database will have emultipl collections.Each collection will contain multile docs or rows
+				- So here is each document in that collection , mongodb will automatically create an 'id' field
+				- 'id' is automatially geenrated
+				- Is used to automatically partition data among multiple servers for scalability
+				- Unique identier		
+				- Document DB is primarily used for scalability
+				-Advanced:
+					- Create a Wildcard index on all fields: Enable
+	- cosmosdb-todos-> Data Explorer:
+			- You should see:
+				- Data:
+					- serverless:
+						- Scale
+						- todos
+							- documents
+							- settings
+			- serverless-> Scale-> todos->documents:
+				- New Document	-> Click on 'New Document' icon on top 
+				- insert data using following jsons and save after each json document
+
+			
+	- 
+	
+						
+-Todo 1
+
+  {
+      "username":"mailsonymathew",
+      "description":"Keep roaring",
+      "targetDate":"2030-07-15T05:46:47.649+0000",
+      "done":false
+   }
+
+
+Todo 2
+
+   {
+      "username":"mailsonymathew",
+      "description":"Become a legend",
+      "targetDate":"2030-07-15T05:47:05.906+0000",
+      "done":false
+   }
+
+
+
+
+
+- Refresh documents -> you can see document with automatically geenrated id
+
+- Connecting local listToDos function with MongoDB:
+-----------------------------------------------------
+	-  Visual Studio:
+		- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+		- Install MongoDB library:
+			- New termional: Click on + icon on exisitng terminal forNew terminal :
+				- Since this is a javascript project, we are using npm to manage dependencies
+				-Create new npm project:
+					- cmd: npm init
+						-package name: azure-rest-api-v2
+						-version:(1.0.0)
+						- description:
+						- entry point:(index.js)
+						- test command:
+						- git repository: 
+						- keywords:
+						- author:
+						- license:(ISC)
+						-Is thsi OK?(yes): yes
+					- Create package.json
+						- we can use package.json to manage dependencies for this js project
+						- Add MongoDB as a dependency:
+							- cmd: npm install --save mongodb
+					- package.json will be updated with mongodb dependency
+						- select the line 'mongodb: "4.2.2" in package.json
+		 					- text will pop up showing github location -> https://github.com/mongodb/node-mongodb-native
+									 - go to github location
+									- Gihub-> scroll down teh repo-> see section for sample code 
+					-Change index.js:
+						- Refer https://github.com/in28minutes/go-serverless/blob/master/01.azure/azure-rest-api-v2/listTodos/index.js
+
+						- url to connect: connection string :
+							- cosmosdb-todos-> Connection String -> Primary connection string
+							- *** Note: 
+								- If url is harcoded in =index.js:
+									- if you are using the connection string directly instead of via environemnt variables, you have to repalce all '==' with encoded notaiton  '%3D%3D'
+									- Thsi is because '==' is used a query parameter
+								 - If you set up url( aka connection string) as an environment variable below, you should not replace '=='.
+
+
+
+						- Setting up envirnment variables const URL, DATABSE_NAME and COLLECTION_NAME
+					-  			- Format to be used 'process.env.variable'
+   									 const URL = process.env.MONGODB_URL;
+    									 const DATABASE_NAME = process.env.MONGODB_DATABASE_NAME;//'serverless'
+    									const COLLECTION_NAME = process.env.MONGODB_COLLECTION_NAME;//'todos'
+
+
+								- go to local.settings.json:
+									- thsi file will be available in'D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application'
+									- define the environemtn vraible and values
+										- Inside section "Values":{
+											"MONGODB_URL": "<connection string>",
+											"MONGODB_DATABASE_NAME": "serverless",
+											"MONGODB_COLLECTION_NAME": "todos"
+										}
+	
+
+
+
+
+
+
+											
+											 
+
+		- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+				- copy listToDos url from console: [GET,POST] http://localhost:7071/api/listToDos
+				- http://localhost:7071/api/todos
+				- should return the documents in the MongoDB
+
+
+
+
+
+
+- Creater Azure finction for GET Todos:
+-----------------------------------------
+	- Visual Studio-> Open folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+	- Click on Create Function icon :
+		- Select template: HTTP trigger
+		- Function Name: getToDo -> Press Enter
+		- Authorization=Anonymous
+	- Refer github code inhttps://github.com/in28minutes/go-serverless/tree/master/01.azure/azure-rest-api-v2
+	- Change function.json and index.js accordingly	
+	- Visual Studio-> Click on Terminal link on the top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+				- copy getToDo url from console: 
+				-  http://localhost:7071/api/todos/{id}
+				- E.g.: http://localhost:7071/api/todos/61b98f51d6e19c183043cfbd
+				- should return the document for that id in the MongoDB	
+	
+
+
+- Connecting Angular Frontend to Azure Functions:
+-------------------------------------------------
+- Update npm packages:
+	- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+
+// install npm check updates
+
+	- cmd: npm i -g npm -check-updates
+// Run npm-check-updates
+	- cmd: npm -u
+// you should then get a list of all your packages to be updated to the newest version
+// Install the updated packages as prompted
+	- cmd: npm install 
+	
+
+- If you want to stop the ng server: CTRL + C or cmd:taskkill /F /IM node.exe
+
+- Backend:Visual Studio-> Main window-> Backend code: OPen folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+- Frontend:Visual Studio-> Second window-> Front code: OPen folder D:\OneDrive\Study\DevOps\AzureFunctions\go-serverless-master\02.frontend-todo-application
+	- Built in Angular
+	- Refer README.md
+	- Install :
+		- NodeJS(npm) : Refer https://nodejs.org/en/download/
+		- Angular CLI : Refer https://angular.io/cli
+			- cmd: npm install -g @angular/cli
+
+
+
+	- Compile & Launch frontend angular application:
+		- cd into D:\OneDrive\Study\DevOps\AzureFunctions\go-serverless-master\02.frontend-todo-application
+		- If the following file is available delete it:
+				:package-lock.json 
+		- Install all modules that are listed on package. json file and their dependencies: 	
+			- cmd: npm install
+
+
+	    	- Launch application:
+			- cmd: ng serve
+				- server will start on http://localhost:4200/
+				- select harcoded login in frontend
+				- tods will not contain anything as we have to connect to ourbackend
+				- Click on 'delete session token' button on top right corner
+
+	- Specify backend api url in app.constants.ts:
+		- Open Visual Studio and go to app.constants.ts in D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\src\app
+			- export const API_URL = 'http://localhost:7071/api/todos'
+
+	- Refresh forontend url 
+		-http://localhost:4200/
+		-Still you will not see any 'todos'
+		-This is because of CORS( Cross Origin Resource Sharing) being disabled
+			- To see the CORSerror: In browser page -> righ tclick -> Inspect -> Console -> you can see error message saying blocked due to CORS policy
+			- Enable CORS:
+				- In VS window 1 -> go to local.settings.json in D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2:
+					- {
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "MONGODB_URL": "mongodb://cosmosdb-todos-mailsonymathew:tUhk7FNhZZq5wjeksp2uCUI6uvoMsA2WP1tOBlLFG7HxtEGyZqyyxOJDzjpKSEeEeLv5kj8exRrWEtxxyPI3YQ==@cosmosdb-todos-mailsonymathew.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@cosmosdb-todos-mailsonymathew@",
+    "MONGODB_DATABASE_NAME": "serverless",
+    "MONGODB_COLLECTION_NAME": "todos"    
+  },
+  "Host": {
+    "CORS": "*" //Enable CORS from everwhere
+  }
+}
+
+
+
+	- 		- Do a CTRL+C and got to termoina window and restart:
+				- cmd: func start
+
+		- Refresh Frontend application http://localhost:4200/:
+			-- Wait for minute
+			- You should be able to see todos
+			- Now we have to create update, deelte and create backend REST APIS
+
+
+- Create Update todo REST API:
+	- Visual Studio-> OPen folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+	- Click on Create Function icon :
+		- Select template: HTTP trigger
+		- Function Name: updateToDo -> Press Enter
+		- Authorization=Anonymous
+	- Refer github code in https://github.com/in28minutes/go-serverless/tree/master/01.azure/azure-rest-api-v2/updateTodo
+	- Change function.json and index.js accordingly	
+	- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+		-
+		- Refresh Frontend application http://localhost:4200/:
+				- Wait for minute
+				- Try updating existing todos
+			
+
+
+- Create Delete todo REST API:
+	- Visual Studio-> OPen folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+	- Click on Create Function icon :
+		- Select template: HTTP trigger
+		- Function Name: deleteToDo -> Press Enter
+		- Authorization=Anonymous
+	- Refer github code in https://github.com/in28minutes/go-serverless/tree/master/01.azure/azure-rest-api-v2/deleteTodo
+	- Change function.json and index.js accordingly	
+	- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+		-
+		- Refresh Frontend application http://localhost:4200/:
+				- Try deelting existing todos
+				- ait for a minute to see results
+			
+
+- Create createtodo REST API:
+	- Visual Studio-> OPen folder D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+	- Click on Create Function icon :
+		- Select template: HTTP trigger
+		- Function Name: createToDo -> Press Enter
+		- Authorization=Anonymous
+	- Refer github code in https://github.com/in28minutes/go-serverless/tree/master/01.azure/azure-rest-api-v2/createTodo
+	- Change function.json and index.js accordingly	
+	- Visual Studio-> Click on Terminal link on teh top bar -> New terminal 
+		- Start function:
+			- cmd: funct start
+		-
+		- Refresh Frontend application http://localhost:4200/:
+				- Try creating todos
+
+
+
+
+****
+Deploy REST API to Azure and getting started with API management
+-----------------------------------------------------
+
+- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+-Signing in and Signing out of Azure:
+	->VS -> View -> Command Pallette -> Azure: Sign in / Azure: Sign Out   
+-Visual Studio -> Azure icon -> Click on Icon to 'Deploy to Function App'
+	-> Select second option for aadvanced = Create a new function app in Azure advanced 
+	-> Enter a globally unique name for our new function app = todo-function-app-mailsonymathew
+	->Runtime Stack=Node.js 16
+	->OS=Linux
+	->Create a new REeounrce Group = todo-rest-api-resource-group
+	->Location=EastUS
+	-> Hosting Plan=consumption
+	-> Create a new Storage Account = todorestapistorageacc
+	-> Create new Application Insights resource= skip fo rnow
+
+	-> Creation will take around 5-10 minutes
+	-> View output to see what all was created
+	-> A new function app should be available below your subscription
+- Azure-> function app-> todo-function-app-mailsonymathew
+
+	- functions->See list of all functions
+		- This is non editable as we have deployed a package. We need to edit using VS and redeploy
+		- Functions->  listTodos-> Get Function Url( remove the '?' at the end):
+			- Function url will not work
+			- VS -> D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2-> local.settings.json
+				-local.settings.json: Configure the supplied environment variable in thsi file within the Azure function app configuration :
+					- Azure-> function app-> todo-function-app-> Configuration -> New Application Setiing -> 
+						
+						: Name=MONGODB_URL
+						  Value= mongodb://cosmosdb-todos-mailsonymathew:wIYCMKQQgKpwfXHe3TSjE9KIdJvptXppGRJreyfKbctqqqc5j9vRV9CrRw2kBffx9COvVG4rBnUprsow2WEdDQ==@cosmosdb-todos-mailsonymathew.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@cosmosdb-todos-mailsonymathew@
+						Disable Deployment Slot setting ( thsi can be used when we have multiple deployment slots)
+						:Name=MONGODB_DATABASE_NAME
+						 Value=Serverless
+						Disable Deployment Slot setting ( thsi can be used when we have multiple deployment slots)
+			
+						:Name=MONGODB_COLLECTION_NAME
+						 Value=todos
+					         Disable Deployment Slot setting ( thsi can be used when we have multiple deployment slots)
+
+						- Save	-> Continue
+
+					- Functions->  listTodos-> Get Function Url
+
+								-Will work only if we have the latest versions of npm, angular and coresponding dependies installed
+
+				- Now connect the front end to the Azure deployed function app:
+					- VS-> New window - Open Folder ->D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+					-app.constants.ts:
+						- Azure function-> todo-function-app-mailsonymathew -> Functions-> listtoDos-> Gt function url-> copy function url without the '?' the end
+							-This url will be the base url we are using for all functions: https://todo-function-app-mailsonymathew.azurewebsites.net/api/todos
+							-export const API_URL = 'https://todo-function-app-mailsonymathew.azurewebsites.net/api/todos'
+						
+					- Launch application:
+						- cmd: ng serve
+						- server will start on http://localhost:4200/
+					- There will not be any todos returned form the MongoDB:
+						- Inspect-> Console-> Blkocked by CORS policy error
+					- Set CORS policy:
+						- VS-> D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2-> local.settings.json = We have already enabled CORS
+						- Azure ->todo-function-app-> API(LHS) -> CORS -> Allowd Origins= *
+					-Wait for a minute and do refresh: http://localhost:4200/
+
+APi Management
+----------------
+- Azure -> API Management Services -> Create
+
+		-> Resource Group = todo-rest-api-resource-group
+		-> Location= East US
+		-> Resource Name= todo-api-management-mailsonymathew
+		-> Organization name= mailsonymathew
+		-> Adminstrator email = mailsonymathew@gmail.com
+		->Pricing tier: Consumption ( thsi means we will pay only base don no. of requests)
+		->Create
+
+- Connect API mgmt to Function APP:
+		- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2
+		- Azure -> API management services ->  todo-rest-api-resource-group->todo-api-management-mailsonymathew:
+			-APIS-> Create from Azure Resource ->Function APP:
+				- Function App -> Create from Function App -> Two options will be shown Basic/Full-> Select Basic -> Browse -> Function App -> select 'todo-function-app' -> 
+				- Select all 'todo' functions listed -> Create	
+				- API url suffix : API URL suffix= tigers
+				- Note: You might need to retry a couple of times for creating the API
+
+		- Test the API:
+			- Get -> listToDos->Unselect 'Bypass CORS proxy'-> Send
+				-> url: Azure -> API management services ->  todo-rest-api-resource-group->todo-api-management-mailsonymathew->APIS->todo-function-app-mailsonymathew->Settings->Base url=https://todo-api-management-mailsonymathew.azure-api.net/tigers-> append todos
+				Request URL = https://todo-api-management-mailsonymathew.azure-api.net/tigers/todos
+				-> From Browser: the request url will not work directly in browser as we have to provid eteh subsrciption key which can be found in the details of the function within the API
+				{
+  "statusCode": 401,
+  "message": "Access denied due to missing subscription key. Make sure to include subscription key when making requests to an API."
+}
+					- Subscriptionkey can be found in: Azure - > API Management Services -> Named Values : todo-function-app-key
+						- Select -> Show value
+					- Can also be seen in function:
+						 -- Azure  -> Function app-> todo-function-app-mailsonymathew -> App keys->  apim-todo-api-management-mailsonymathew
+
+					- TALEND API tester-> 
+						: headers-> Name=Ocp-Apim-Subscription-Key
+							 -> Value=<value> 
+						-> send request
+				->Subscription key:
+					- Azure -> API management services ->  todo-api-management-mailsonymathew-> APIs-> All APIs->todo-api-management-mailsonymathew-> Settings-> Scroll down-> Subscription
+					-        -> Subscription required = enabled
+						  -> header name= Ocp-Apim-Subscription-Key
+						  -> Query parmeter name= subscription-key
+						  - user authorizati=none
+					- Remove Subscription required and send request: ** Not working - showing invalid subscription key
+
+		- Connect front end to API :	
+			- VS-> New window - Open Folder ->D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+					-app.constants.ts:
+						- API mgmt url = Azure -> API management services ->  todo-rest-api-resource-group->todo-api-management-mailsonymathew-> Settings-> base url-> append todos: https://todo-api-management-mailsonymathew.azure-api.net/tigers/todos
+						- export const API_URL:API mgment url					
+				- Now connect the front end to the Azure deployed finction app:
+					- VS-> New window - Open Folder ->D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+					-app.constants.ts:
+						- export const API_URL:Azure function app url
+					- Compile project: 	
+						- cmd: npm install
+					- Launch application:
+						- cmd: ng serve
+						- server will start on http://localhost:4200/
+					- There will not be any todos returned form the MongoDB:
+						- Inspect-> Console-> Blkocked by CORS policy error
+					- Set CORS policy:
+						-  API Management Services -> todo-api-management-mailsonymathew-> Design -> Operations->Inbound processing -> Policies ->scroll down->  add policy-> 	Allow cross-orgin resounrce sharing (CORS)
+							- Select Full tab ( instead of basic):
+								-> Allowed Orgins = *
+								-> Allowed method: Select all
+								-> Allowed Header-> Add Allowed Header = *
+								->Save
+							- If you want to see te configuration as code for above setup seelct the '</>' icon in the 'Inbound Processing' box
+						- Refersh http://localhost:4200/
+
+
+Connecting Frontend to REST API suing Azure API Magmt
+-----------------------------------------------------	
+							
+- Right now we can directly invoke the function  urls instead of gong through the API mgmt. This is a bad design. We need to ensure all requests are sent only via the API mgmt
+- Option 1:Use Certificate
+	- API Mgmnt -> todo-api-management-mailsonymathew->Security->Certificates-> Create Certificate
+	- Configure function app to accept only requests having acerticiate
+	- For the demo, we are not going to use this option.
+- Option 2:Use Function keys in function.json in the backend rest api 
+	-  VS -> D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\01.azure\azure-rest-api-v2-> 
+				-listToDos -> function.json:
+					"bindings": [
+    {
+      "authLevel": "function",
+
+		- similarly change for all functions
+
+					
+		- VS -Azure icon -> Click on Icon to 'Deploy to Function App'-> todo-function-app -> Deploy
+		- Deployment wil ltake a couple of minutes		
+		- Now try accessign the API mgmnt url -> it will work 
+		- The function url however will not work-> 401 unauthorized 
+		- Function key:
+			- is automatically geenrated and can be found in:
+				- Azure - > API Management Services -> Named Values : todo-function-app-key
+				- Azure  -> Function app-> todo-function-app -> App keys-> Host keys -> apim-todo-api-management
+				i.e Key is configured both on Azure API mgmt and fucntion app 
+		- 
+				 	
+
+- Deploy Front Application as static website to Azure:
+---------------------------------------------------------
+	- Resource Group -> tod-rest-api-resource-group-> Storage account = todorestapistorageaccnt
+			- Thsi storage account can be used to host the static website
+			- Create deployable unit for front end application:
+				- Stop application
+				- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+				- cmd:ng build
+				- Deplyable unit will be geenrated in a folder 'dist':
+					- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\dist
+			- Account is general purpose v1 which cannot host static website-> Upgrade to v2:
+					-Resource Group -> tod-rest-api-resource-group-> Storage account = todorestapistorageaccnt->Overview -> Account Kind -> click on change link
+				- After upgrading to website-> Serach for website-> Static website - Enabled-> 
+						- Index document name= index.html->Save
+						- Click on $web link-> Upload -> Upload blob->Select al files in D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\dist\todo->Select all -> Open -> Upload
+				->Resource Group -> todo-rest-api-resource-group-> Storage account = todorestapistorageaccnt->End points -> Static website -> copy url and launch  
+
+				OR
+			->Resource Group -> todo-rest-api-resource-group-> Storage account = todorestapistorageaccnt->End points -> Static website -> Primary endpoint-> copy url and launch  
+
+
+
+
+Authentication
+---------------
+
+Creatign Azure Active Directory B2C tenant:
+	- Offers consumer identity and access mgmt
+ 	- Azure AD:
+		 - Active Directory is an identity and service provider aimed at organization users to provide and control access to cloud resounrces
+	- Azure AD B2C: 
+		- Is an independent service for building a consumer application identity repository
+
+	- Create an Azure AS B2C account:
+		-- Refer: https://docs.microsoft.com/en-us/azure/active-directory-b2c/tutorial-create-tenant?WT.mc_id=Portal-Microsoft_AAD_B2CAdmin
+		- Azure->Create a resource -> Search for 'Azure Active Directory B2C'-> Creat-> Create a new Azure B2C tenanat:
+				
+				- Organization name = mailsonymathew
+				- Initial Domian name= todomailsonymathew
+				- Country/REgion= United States	
+				 -Subscription= Azure subscription 1
+				- Resource group = todo-rest-api-resource-group 
+				- REview & Create -> Create
+		- After successful creation of B2C tenant 'todomailsonymathew', got to the tenant:
+				- Azure -> B2C tenant -> mailsonymathew -> Will open up in new tab-> Note the directory name on the RHS corner near the account icon  = mailsonymathew
+					- *** This directory is different from teh default directory which we have been using 
+					- We wil be using 'mailsonymathew'  for the Authentication strp:
+		- Go to window with directory = mailsonymathew
+			- You can switch from one directory to another -> Click on account icon on any directory -> Click on link 'Switch Directory' -> Select teh desired direcltry
+			- We want to connect the front end and API mgmnt functions to the B2C:
+				- We want the front end users to login using their credentials and we want to authenticate their access to the API mgmnt. In other words only users logging in through the front end will be able to acess the API mgmt. 
+				- Google 'SPA oauth ad b2c' : 
+					- https://docs.microsoft.com/en-us/azure/api-management/howto-protect-backend-frontend-azure-ad-b2c
+					- SPA stands for Single Page Application 
+				- For authentication, we need to create two apps( One for api mgmt anad another for frontend):
+
+					- App 1: For API-mgmt
+						- Azure -> Azure AD B2C -> todomailsonymathew-> App registrations( on LHS tab) -> New registration:
+							- Name=api-management
+							- Supported account types = Accounts in any identity provider or orgnizational directory ( for authenticating users with use flows)
+							- Redirect url:
+								= Select Web
+								= type: https://jwt.ms 
+									- Is a jwt site provided by microsoft
+							- Permissions:
+								- Enable 'Grant admin consent to openid and offline_access permissions
+							- Register
+							- Azure -> Azure AD B2C -> todomailsonymathew-> api-management-> Overview
+								- Click on 'Add Application ID URI' -> Set -> add any suffix you lie or keep the default -> Copy the API mgmnt uri
+									- https://todomailsonymathew.onmicrosoft.com/tigers
+								- Application( client) id: copy id
+									- 1ac1f040-049e-4e22-b0b7-0cffe3a1ae1a
+								- Create client secret:
+									- LHS -> Certificates & Secrets -> Client Secrets -> New Client Secret 
+										- Desciption= api-management
+										- Add 
+									- Copy value of client secret :
+										- 39d7Q~t4a.hNSPXQxcMKoN-oeNnwqchFQq2Ih
+
+									- Copy value Secret ID :
+										- 814c097e-9637-4efe-ab44-d3463bb022f5
+				
+								- Expose an API:
+									-LHS -> Expose an API -> 
+										- Scopes are used to create user rules 
+										- Add a scope -> 
+											-Scope name= Read 
+											- Admin consent display name = Read 
+											- Admin consent descripion = Read 
+											- State= Enabled
+										- Similarly add a scope for 'Write'			
+			
+					- App 2 : For Front end
+						- Azure -> Azure AD B2C -> todomailsonymathew-> App registrations( on LHS tab) -> New registration:
+							- Name=frontend
+							- Supported account types = Accounts in any identity provider or orgnizational directory ( for authenticating users with use flows)
+							- Redirect url:
+								= Select Web
+								= type: https://jwt.ms 
+									- Is a jwt site provided by microsoft
+							- Permissions:
+								- Enable 'Grant admin consent to openid and offline_access permissions
+							- Register
+							- Azure -> Azure AD B2C -> todomailsonymathew-> frontend-> Overview
+								- Click on 'Add Application ID URI'-> Set ->-> add any suffix you lie or keep the default -> Copy the frontend uri
+									- 
+								- Application( client) id: copy id
+									- https://todomailsonymathew.onmicrosoft.com/roar
+							- Athentication: 
+								- Azure -> Azure AD B2C -> todomailsonymathew-> frontend-> Authentication ( LHS)
+									- Scroll down to section 'Implicit Grant':
+										- Allows an application to request a token directly from the authorization endpoint
+										- Only recomended for SPA( Single PAge Applications) 
+										- Enable:
+											- Access tokens
+											- ID tokens
+										- Save
+							-API Permissions:
+								- We want give permission for fronendt to access the API mgmt
+								- Azure -> Azure AD B2C -> todomailsonymathew-> frontend-> API Permissions( LHS):
+									- Add a permission ->My APIs->  api-management -> Select permissions which we had added as scopes in API mgmnt-> Select 'Read' & 'Write'-> Add Permissions			
+
+									- Also click on icon 'Grant admin consent' beside the 'Add  a permission' icon
+
+
+		
+
+- Create Azure AD B2C user Flow for Sign in and Sign up:
+		- Go to window with directory = mailsonymathew
+			-  Azure -> Azure AD B2C -> todomailsonymathew-> User Flows ( LHS) -> New USer Flow -> Create a User Flow:
+				- Select 'Sign up and Sign in'
+				- Version = Recommended 
+					- Create 
+						- Name= todo-signin
+						- Identity providers= Email signup (*** we can also use any other opton like FB.Google account etc.)  
+						- MFA method = email
+						- MFA enforcement = conditional( recommended) 
+						- User attributes and token claims:
+							- Click on show more:
+								- Enable:
+									- Display name 
+										- Collect Attribute
+										- Return Claim
+											- We want the user name to be returned back in the token  				
+									- Email address 
+										- Collect Attribute
+
+								- Ok
+						- Create 
+				- Azure -> Azure AD B2C -> todomailsonymathew-> User Flows-> B2C_1_todo-signin
+					- Click to see overview 	
+					- You can customize this further by clicking on 'Page Layouts'
+					- You can configure further identity providrs by going to 'Identity Providers'
+					- Click on 'Run User Flow' icon:
+						- Application = frontend
+						- Reply url= https://jwt.ms
+						- Access Tokens 	
+		 					- Resource:
+								- ***If wE will not be able to select api-management
+									- Azure -> Azure AD B2C -> App registrations -> frontend-> API permissions-> Grant Admin consent 
+								- Select 'api-management'
+						- Scopes = openid
+						- Run user flow -> Sign in page with signup option will appear
+ 
+		
+- Create User for Azure AD B2c:
+	- Use the new sign up page to create account using email verification 
+	- Set pwd and display name .*** Check: Use display name as 'mailsonymathew' or 'in28minutes' as thsi is what is stored in the tables.
+	- Once the user is created we will automatically be re-directed to the jwt.ms site:
+		- We can see the jwt token
+		- The decoded version will contain the name as we had specified this in the return claim when we created the Azure AD B2C user Flow
+		- Keep this page open
+		- Run the user flow again and login with your user id and pwd -> Sign in
+		- We wil lagain be re-directed back to jwt.ms
+		- What we actually want is that after sign in , we should be redirected to our frontend application and connect to the API mngmt
+
+- Connecting API mgmt with Azure AD B2C:
+	- Right now thw API mgmnt urls acan be accessed without an authentication
+	- We want to use the jwt tokens generated in teh previous step to authenticate access
+	- Leave the  logged in jwt page open in the previous step 
+	- Azure -> Default Directory -> API management -> todo-api-management-mailsonymathew -> APIs-> todo-function-app-mailsonymathew -> Inbound Processing -> Policies -> 
+		-> We already have added BASE and CORS -> Add Policy -> Click on 'Validate JWT' -> Basic:
+			- Header name = Authorization
+			- Failed Validation HTTP code = 401- Unauthorized
+			- Add claim: 
+				- from the open jwt.ms page -> click on 'Claims' link beside the Decoded Toekn -> copy claim 'aud' and value
+				- Name=aud
+				- Match= all claims 
+				- Values->add value = 'aud' value copied from jwt.ms
+				- Open ID url-> Add Open ID url: 
+					- Azure->Directory-> mailsonymathew-> Azure AD B2C-> B2C_1_todo-signin-> Overview -> copy link under 'Run user flow'->omit https:// and paste the remaining 
+				- Save 
+			- Refresh the API mgmnt url :
+				- Azure -> Default Directory -> API management Services-> todo-api-management-mailsonymathew -> APIs-> todo-function-app-mailsonymathew-> Settings-> Base url-> append 'todos':  https://todo-api-management-mailsonymathew.azure-api.net/tigers/todos
+
+
+****** Start - The following steps are not failing with authentication error as expected************
+				- Will fail with authentication error  '401 - JWT not present'
+				- Front end application url will also fail to show any todos
+					- Resource Group -> tod-rest-api-resource-group-> Storage account = todorestapistorageaccnt-> Static website -> Primary endpoint-> copy url and launch
+					- Inspect page -> console -> authentication error  '401 - Unauthorized'		 
+
+				- If we are runnign the front end from local , we need to pass the authorization header in teh API mgmnt url request:
+					- Note: Thsis not required if we are runnign from the static website hosted in Azure storage account
+					- Open Talend API :
+						- API mgmnt url:  Azure -> Default Directory -> API management -> todo-api-management -> APIs-> todo-function-app 
+	 					- GET :
+							- url= API mgmnt url
+							- delete existign headers and add new one:
+								- Authorization = <jwt code as copied from jwt.ms>
+							
+
+****** End - The above steps are not failing with authentication error as expected************
+
+
+- Connecting Fronetend Application with Azure AD B2C:
+	- Azure frontend url:
+		- Azure -> Directory-> default->Resource Group -> tod-rest-api-resource-group-> Storage account = todorestapistorageaccnt-> Static website -> Primary endpoint-> copy url 
+			- https://todorestapistorageacc.z13.web.core.windows.net/
+	- Add redirect url in app registrations for frontend in AD B2C with the Azure fromend url above: 
+		- Azure -> Directory-> mailsonymathew-> Azure AD B2C-> App Registrations-> frontend-> Authentication ( LHS) -> Web -> Redirect ulrs -> Add below 'https://jwt.ms' new redirect url using Azure frontend url:https://todorestapistorageacc.z13.web.core.windows.net/  -> Save
+
+	- Azure AD B2C user flow :
+		- Azure -> Directory-> mailsonymathew-> Azure AD B2C-> User flows -> B2C_1_todo-signin-> Run user flow:
+			- Application = frontend
+			- replyurl= select Azure Frontend url
+				** remember only those urls that we have configured in  app registrations for frontend in AD B2C will be availble
+			- Resounrce = api-management
+			- Access token= Select only 'openid'
+			- copy 'Run user flow endpoint' url:
+				- Azure -> Directory-> mailsonymathew-> Azure AD B2C-> B2C_1_todo-signin-> Overview -> copy link under 'Run user flow'->
+				- 				- https://todomailsonymathew.b2clogin.com/todomailsonymathew.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_todo-signin&client_id=0f84f7be-dbfe-4284-b6bd-3fa191102293&nonce=defaultNonce&redirect_uri=https%3A%2F%2Ftodorestapistorageacc.z13.web.core.windows.net%2F&scope=openid&response_type=id_token&prompt=login
+			- Run user flow _> will redirect to todos page
+	- Configure front end appl;ication to use Azure login:	
+	- Visual studio -> D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+		-Goto file login.component.html-> D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\src\app\login#login.component.html
+			- Replace <a href..> with the 'Run user flow endpoint' url copied above:
+<a href="https://todoin28minutes.b2clogin.com/todoin28minutes.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_todo-signin&client_id=454c3b43-a8d3-4b60-8c20-38a43d7a0ab4&nonce=defaultNonce&redirect_uri=http%3A%2F%2Flocalhost%3A4200%2F&scope=openid&response_type=id_token&prompt=login"
+      class="btn btn-success mr-1">Azure Login</a>
+			- Redeploy:
+			- Create deployable unit for front end application:
+				- Stop application
+				- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application
+				- cmd:ng build
+				- Deplyable unit will be geenrated in a folder 'dist':
+					- D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\dist
+			- Account is general purpose v1 which cannot host static website-> Upgrade to v2:
+					-Overview -> Account Kind -> click on 	change link
+				- After upgrading to website-> Serach for website-> Static website - Enabled-> 
+						- Index document name= index.html
+						- Click on $web link-> Upload -> Select al files in D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\dist\todo->Seelct all -> Open -> Upload
+				->Resource Group -> tod-rest-api-resource-group-> Storage account = todorestapistorageaccnt-> Static website -> Primary endpoint-> copy url and launch  
+
+			- Once application is launched -> Click on 'Azure Login' -> Wil take us to Azure user flow login page :
+				-> This will again reidrect automatically to our Azure front end application with jwt token. The front end applicationis written in such a way to accept teh token , store it in session storage and and send it out to the API mgmnt REST API. Code is available in authentication.service.ts found in D:\OneDrive\Study\DevOps\AzureAuthentication\go-serverless-master\02.frontend-todo-application\src\app\service.
+				** Note : thsi code is just a hack written for demo purposes. In real prod situations, we should use MSAL ( MS Authetication Library) to integrate with Azure AD B2C
+				-> Should show todos 
+			
+		
+
+- Deleting tenant : Refer https://docs.microsoft.com/en-us/answers/questions/511/how-do-i-delete-my-azure-ad-b2c-tenant.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
